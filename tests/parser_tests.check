@@ -1,0 +1,36 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "../src/gram.h"
+#include "test_helper.h"
+
+#test parse_empty_object
+    int success = 0;
+    void *parser = ParseAlloc(malloc);
+
+    Parse(parser, LBRACE, strdup("{"), &success);
+    Parse(parser, RBRACE, strdup("}"), &success);
+
+    Parse(parser, 0, 0, &success);
+    ParseFree(parser, free);
+
+    ck_assert(success == 0);
+
+#test parse_object
+    int success = 0;
+    void *parser = ParseAlloc(malloc);
+
+    Parse(parser, LBRACE, strdup("{"), &success);
+    Parse(parser, IDENTIFIER, strdup("spam"), &success);
+    Parse(parser, COLON, strdup(":"), &success);
+    Parse(parser, LBRACKET, strdup("["), &success);
+    Parse(parser, STRING, strdup("\"eggs\""), &success);
+    Parse(parser, COMMA, strdup(","), &success);
+    Parse(parser, STRING, strdup("\"ham\""), &success);
+    Parse(parser, RBRACKET, strdup("]"), &success);
+    Parse(parser, RBRACE, strdup("}"), &success);
+
+    Parse(parser, 0, 0, &success);
+    ParseFree(parser, free);
+
+    ck_assert(success == 0);
