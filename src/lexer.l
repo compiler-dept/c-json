@@ -2,6 +2,8 @@
 #include "gram.h"
 %}
 
+%x str
+
 %option reentrant
 %option noyywrap
 %option noinput
@@ -9,6 +11,9 @@
 
 %%
 
+"\""                    { BEGIN str; }
+<str>"\."               {} // Ignore escape sequences
+<str>"\""               return STRING;
 [a-zA-Z][a-zA-Z0-9]*    return IDENTIFIER;
 -?[0-9]+(\.[0-9]+)?     return NUMBER;
 [ \t\n]+                ;
