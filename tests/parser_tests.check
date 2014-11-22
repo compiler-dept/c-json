@@ -2,35 +2,63 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../src/gram.h"
+#include "../src/json.h"
+#include "hashmap.h"
 #include "test_helper.h"
 
 #test parse_empty_object
-    int success = 0;
+    struct json_data json;
     void *parser = ParseAlloc(malloc);
 
-    Parse(parser, LBRACE, strdup("{"), &success);
-    Parse(parser, RBRACE, strdup("}"), &success);
+    Parse(parser, LBRACE, strdup("{"), &json);
+    Parse(parser, RBRACE, strdup("}"), &json);
 
-    Parse(parser, 0, 0, &success);
+    Parse(parser, 0, 0, &json);
     ParseFree(parser, free);
 
-    ck_assert(success == 0);
+    ck_assert(json.type == JSON_OBJECT);
+    ck_assert(json.object_ref == NULL);
 
 #test parse_object
-    int success = 0;
+    struct json_data json;
     void *parser = ParseAlloc(malloc);
 
-    Parse(parser, LBRACE, strdup("{"), &success);
-    Parse(parser, IDENTIFIER, strdup("spam"), &success);
-    Parse(parser, COLON, strdup(":"), &success);
-    Parse(parser, LBRACKET, strdup("["), &success);
-    Parse(parser, STRING, strdup("\"eggs\""), &success);
-    Parse(parser, COMMA, strdup(","), &success);
-    Parse(parser, STRING, strdup("\"ham\""), &success);
-    Parse(parser, RBRACKET, strdup("]"), &success);
-    Parse(parser, RBRACE, strdup("}"), &success);
+    Parse(parser, LBRACE, strdup("{"), &json);
+    Parse(parser, IDENTIFIER, strdup("spam"), &json);
+    Parse(parser, COLON, strdup(":"), &json);
+    Parse(parser, LBRACKET, strdup("["), &json);
+    Parse(parser, STRING, strdup("\"eggs\""), &json);
+    Parse(parser, COMMA, strdup(","), &json);
+    Parse(parser, STRING, strdup("\"ham\""), &json);
+    Parse(parser, RBRACKET, strdup("]"), &json);
+    Parse(parser, RBRACE, strdup("}"), &json);
 
-    Parse(parser, 0, 0, &success);
+    Parse(parser, 0, 0, &json);
     ParseFree(parser, free);
 
-    ck_assert(success == 0);
+    ck_assert(json.type == JSON_OBJECT);
+    ck_assert(json.object_ref != NULL);
+
+    struct json_data *array = hashmap_get(json.object_ref, "spam");
+
+    ck_assert(array->type == JSON_ARRAY);
+    ck_assert(array->array_ref->size == 2);
+    ck_assert(array->array_ref->values[0]->type == JSON_STRING);
+    puts(array->array_ref->values[0]->string_value);
+
+#test parse_object2
+    struct json_data json;
+    void *parser = ParseAlloc(malloc);
+
+    Parse(parser, LBRACE, strdup("{"), &json);
+    Parse(parser, IDENTIFIER, strdup("spam"), &json);
+    Parse(parser, COLON, strdup(":"), &json);
+    Parse(parser, LBRACKET, strdup("["), &json);
+    Parse(parser, STRING, strdup("\"eggs\""), &json);
+    Parse(parser, COMMA, strdup(","), &json);
+    Parse(parser, STRING, strdup("\"ham\""), &json);
+    Parse(parser, RBRACKET, strdup("]"), &json);
+    Parse(parser, RBRACE, strdup("}"), &json);
+
+    Parse(parser, 0, 0, &json);
+    ParseFree(parser, free);

@@ -6,17 +6,27 @@
 
 enum json_type {JSON_NULL, JSON_BOOL, JSON_NUM, JSON_STRING, JSON_ARRAY, JSON_OBJECT};
 
-struct {
+struct json_entry_list {
     int size;
-    struct json_data *values;
-} json_array;
+    struct json_entry *values[];
+};
+
+struct json_entry {
+    char *key;
+    struct json_data *value;
+};
+
+struct json_array {
+    int size;
+    struct json_data *values[];
+};
 
 struct json_data {
     enum json_type type;
     union {
         unsigned char bool_value;
         double num_value;
-        const char * string_value;
+        char *string_value;
         struct json_array *array_ref;
         struct hashmap *object_ref;
     };
