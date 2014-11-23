@@ -6,7 +6,7 @@
 #include "hashmap.h"
 #include "test_helper.h"
 
-#test parse_empty_object
+#test empty_object
     struct json_data json;
     void *parser = ParseAlloc(malloc);
 
@@ -18,22 +18,57 @@
 
     ck_assert(json.type == JSON_OBJECT);
     ck_assert(json.object_ref == NULL);
+    ck_assert(json_object_get(&json, 1, "needle") == NULL);
 
-#test parse_object
+#test get_nonexisting
+    struct json_data json;
+    void *parser = ParseAlloc(malloc);
+
+    Parse(parser, LBRACE, strdup("{"), &json);
+    Parse(parser, IDENTIFIER, strdup("string"), &json);
+    Parse(parser, COLON, strdup(":"), &json);
+    Parse(parser, STRING, strdup("\"foo\""), &json);
+    Parse(parser, RBRACE, strdup("}"), &json);
+
+    Parse(parser, 0, 0, &json);
+    ParseFree(parser, free);
+
+    ck_assert(json.type == JSON_OBJECT);
+    ck_assert(json_object_get(&json, 1, "needle") == NULL);
+
+#test get_object_atomic
     struct json_data json;
     void *parser = ParseAlloc(malloc);
 
     Parse(parser, LBRACE, strdup("{"), &json);
 
-    Parse(parser, IDENTIFIER, strdup("spam"), &json);
+    Parse(parser, IDENTIFIER, strdup("null"), &json);
     Parse(parser, COLON, strdup(":"), &json);
-    Parse(parser, STRING, strdup("\"eggs\""), &json);
+    Parse(parser, JNULL, strdup("null"), &json);
 
     Parse(parser, COMMA, strdup(","), &json);
 
-    Parse(parser, IDENTIFIER, strdup("foo"), &json);
+    Parse(parser, IDENTIFIER, strdup("bool1"), &json);
     Parse(parser, COLON, strdup(":"), &json);
-    Parse(parser, STRING, strdup("\"bar\""), &json);
+    Parse(parser, BOOLEAN, strdup("true"), &json);
+
+    Parse(parser, COMMA, strdup(","), &json);
+
+    Parse(parser, IDENTIFIER, strdup("bool2"), &json);
+    Parse(parser, COLON, strdup(":"), &json);
+    Parse(parser, BOOLEAN, strdup("false"), &json);
+
+    Parse(parser, COMMA, strdup(","), &json);
+
+    Parse(parser, IDENTIFIER, strdup("number"), &json);
+    Parse(parser, COLON, strdup(":"), &json);
+    Parse(parser, NUMBER, strdup("-23.4"), &json);
+
+    Parse(parser, COMMA, strdup(","), &json);
+
+    Parse(parser, IDENTIFIER, strdup("string"), &json);
+    Parse(parser, COLON, strdup(":"), &json);
+    Parse(parser, STRING, strdup("\"foo\""), &json);
 
     Parse(parser, RBRACE, strdup("}"), &json);
 
@@ -41,21 +76,92 @@
     ParseFree(parser, free);
 
     ck_assert(json.type == JSON_OBJECT);
-    struct json_data *needle = json_object_get(&json, 1, "spam");
+
+    struct json_data *needle;
+
+    needle = json_object_get(&json, 1, "null");
+    ck_assert(needle != NULL);
+    ck_assert(needle->type == JSON_NULL);
+
+    needle = json_object_get(&json, 1, "bool1");
+    ck_assert(needle != NULL);
+    ck_assert(needle->type == JSON_BOOL);
+    ck_assert(needle->bool_value > 0);
+
+    needle = json_object_get(&json, 1, "bool2");
+    ck_assert(needle != NULL);
+    ck_assert(needle->type == JSON_BOOL);
+    ck_assert(needle->bool_value == 0);
+
+    needle = json_object_get(&json, 1, "number");
+    ck_assert(needle != NULL);
+    ck_assert(needle->type == JSON_NUM);
+    ck_assert(needle->num_value == -23.4);
+
+    needle = json_object_get(&json, 1, "string");
+    ck_assert(needle != NULL);
     ck_assert(needle->type == JSON_STRING);
-    ck_assert(strcmp(needle->string_value, "eggs") == 0);
+    ck_assert(strcmp(needle->string_value, "foo") == 0);
+
+#test get_object_object
+    struct json_data json;
+    void *parser = ParseAlloc(malloc);
+
+    Parse(parser, LBRACE, strdup("{"), &json);
+
+    Parse(parser, IDENTIFIER, strdup("object"), &json);
+    Parse(parser, COLON, strdup(":"), &json);
+        Parse(parser, LBRACE, strdup("{"), &json);
+        Parse(parser, IDENTIFIER, strdup("object"), &json);
+        Parse(parser, COLON, strdup(":"), &json);
+            Parse(parser, LBRACE, strdup("{"), &json);
+            Parse(parser, IDENTIFIER, strdup("string"), &json);
+            Parse(parser, COLON, strdup(":"), &json);
+            Parse(parser, STRING, strdup("\"foo\""), &json);
+            Parse(parser, RBRACE, strdup("}"), &json);
+        Parse(parser, RBRACE, strdup("}"), &json);
+
+    Parse(parser, RBRACE, strdup("}"), &json);
+
+    Parse(parser, 0, 0, &json);
+    ParseFree(parser, free);
+
+    ck_assert(json.type == JSON_OBJECT);
+
+    struct json_data *needle;
+
+    // test step by step
+    needle = json_object_get(&json, 1, "object");
+    ck_assert(needle != NULL);
+    ck_assert(needle->type = JSON_OBJECT);
+
+    needle = json_object_get(needle, 1, "object");
+    ck_assert(needle != NULL);
+    ck_assert(needle->type = JSON_OBJECT);
+
+    needle = json_object_get(needle, 1, "string");
+    ck_assert(needle != NULL);
+    ck_assert(needle->type = JSON_STRING);
+    ck_assert(strcmp(needle->string_value, "foo") == 0);
+
+    // test automatic search
+    needle = json_object_get(&json, 3, "object", "object", "string");
+    ck_assert(needle != NULL);
+    ck_assert(needle->type = JSON_STRING);
+    ck_assert(strcmp(needle->string_value, "foo") == 0);
+
 
 #test parse_array
     struct json_data json;
     void *parser = ParseAlloc(malloc);
 
     Parse(parser, LBRACE, strdup("{"), &json);
-    Parse(parser, IDENTIFIER, strdup("spam"), &json);
+    Parse(parser, IDENTIFIER, strdup("array"), &json);
     Parse(parser, COLON, strdup(":"), &json);
     Parse(parser, LBRACKET, strdup("["), &json);
-    Parse(parser, STRING, strdup("\"eggs\""), &json);
+    Parse(parser, STRING, strdup("\"foo\""), &json);
     Parse(parser, COMMA, strdup(","), &json);
-    Parse(parser, STRING, strdup("\"ham\""), &json);
+    Parse(parser, STRING, strdup("\"bar\""), &json);
     Parse(parser, RBRACKET, strdup("]"), &json);
     Parse(parser, RBRACE, strdup("}"), &json);
 
@@ -63,12 +169,11 @@
     ParseFree(parser, free);
 
     ck_assert(json.type == JSON_OBJECT);
-    ck_assert(json.object_ref != NULL);
 
-    struct json_data *array = hashmap_get(json.object_ref, "spam");
-
+    struct json_data *array = json_object_get(&json, 1, "array");
     ck_assert(array->type == JSON_ARRAY);
     ck_assert(array->array_ref->size == 2);
     ck_assert(array->array_ref->values[0]->type == JSON_STRING);
-    ck_assert(strcmp(array->array_ref->values[0]->string_value, "eggs") == 0);
+    ck_assert(strcmp(array->array_ref->values[0]->string_value, "foo") == 0);
+    ck_assert(strcmp(array->array_ref->values[1]->string_value, "bar") == 0);
 
