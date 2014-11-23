@@ -31,7 +31,7 @@ void json_free_array(struct json_array *array)
 {
 	if (array) {
 		for (int i = 0; i < array->size; i++) {
-			free(array->values[i]);
+			json_free(array->values[i]);
 		}
 		free(array);
 	}

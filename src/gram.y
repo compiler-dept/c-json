@@ -42,6 +42,8 @@ object(O) ::= LBRACE entry_list(EL) RBRACE.
     for (int i = 0; i < EL->size; i++){
         hashmap_put(&O, EL->values[i]->key,
             EL->values[i]->value);
+        free(EL->values[i]->key);
+        free(EL->values[i]);
     }
     free(EL);
 }
