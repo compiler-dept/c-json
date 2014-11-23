@@ -55,7 +55,7 @@ entry_list(EL1) ::= entry(E) COMMA entry_list(EL2).
     EL1->size = EL2->size + 1;
     EL1->values[0] = E;
     memcpy(EL1->values + 1, EL2->values,
-        EL2->size * sizeof(struct json_entry));
+        EL2->size * sizeof(struct json_entry *));
     free(EL2);
 }
 entry_list(EL) ::= entry(E).
@@ -97,8 +97,12 @@ atomic(A) ::= STRING(S).
 {
     A = malloc(sizeof(struct json_data));
     A->type = JSON_STRING;
-    A->string_value = malloc(strlen(S) + 1);
-    strcpy(A->string_value, S);
+    int len = strlen(S) - 1;
+    A->string_value = malloc(len);
+    A->string_value[len - 1] = '\0';
+    for (int i = 0; i < len - 1; i++){
+        A->string_value[i] = S[i + 1];
+    }
     free(S);
 }
 atomic(A) ::= array(AR).

@@ -24,6 +24,32 @@
     void *parser = ParseAlloc(malloc);
 
     Parse(parser, LBRACE, strdup("{"), &json);
+
+    Parse(parser, IDENTIFIER, strdup("spam"), &json);
+    Parse(parser, COLON, strdup(":"), &json);
+    Parse(parser, STRING, strdup("\"eggs\""), &json);
+
+    Parse(parser, COMMA, strdup(","), &json);
+
+    Parse(parser, IDENTIFIER, strdup("foo"), &json);
+    Parse(parser, COLON, strdup(":"), &json);
+    Parse(parser, STRING, strdup("\"bar\""), &json);
+
+    Parse(parser, RBRACE, strdup("}"), &json);
+
+    Parse(parser, 0, 0, &json);
+    ParseFree(parser, free);
+
+    ck_assert(json.type == JSON_OBJECT);
+    struct json_data *needle = json_object_get(&json, 1, "spam");
+    ck_assert(needle->type == JSON_STRING);
+    ck_assert(strcmp(needle->string_value, "eggs") == 0);
+
+#test parse_array
+    struct json_data json;
+    void *parser = ParseAlloc(malloc);
+
+    Parse(parser, LBRACE, strdup("{"), &json);
     Parse(parser, IDENTIFIER, strdup("spam"), &json);
     Parse(parser, COLON, strdup(":"), &json);
     Parse(parser, LBRACKET, strdup("["), &json);
@@ -44,21 +70,5 @@
     ck_assert(array->type == JSON_ARRAY);
     ck_assert(array->array_ref->size == 2);
     ck_assert(array->array_ref->values[0]->type == JSON_STRING);
-    puts(array->array_ref->values[0]->string_value);
+    ck_assert(strcmp(array->array_ref->values[0]->string_value, "eggs") == 0);
 
-#test parse_object2
-    struct json_data json;
-    void *parser = ParseAlloc(malloc);
-
-    Parse(parser, LBRACE, strdup("{"), &json);
-    Parse(parser, IDENTIFIER, strdup("spam"), &json);
-    Parse(parser, COLON, strdup(":"), &json);
-    Parse(parser, LBRACKET, strdup("["), &json);
-    Parse(parser, STRING, strdup("\"eggs\""), &json);
-    Parse(parser, COMMA, strdup(","), &json);
-    Parse(parser, STRING, strdup("\"ham\""), &json);
-    Parse(parser, RBRACKET, strdup("]"), &json);
-    Parse(parser, RBRACE, strdup("}"), &json);
-
-    Parse(parser, 0, 0, &json);
-    ParseFree(parser, free);

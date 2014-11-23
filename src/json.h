@@ -32,4 +32,6 @@ struct json_data {
     };
 };
 
+struct json_data *json_object_get(struct json_data *json_object, int keyc, ...);
+
 #endif /* end of include guard: JSON_H */

@@ -33,7 +33,7 @@ tests/%_tests.c: tests/%_tests.check
 	checkmk $< > $@
 
 bin/tests/%_tests: tests/%_tests.c src/lexer.c libcollect bin/tests
-	$(CC) $(CFLAGS) `pkg-config --cflags --libs check` -o $@ $< src/gram.c src/lexer.c $(LDFLAGS)
+	$(CC) $(CFLAGS) `pkg-config --cflags --libs check` -o $@ $< src/json.c src/gram.c src/lexer.c $(LDFLAGS)
 	$@
 
 libcollect:
