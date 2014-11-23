@@ -6,15 +6,6 @@
 
 enum json_type {JSON_NULL, JSON_BOOL, JSON_NUM, JSON_STRING, JSON_ARRAY, JSON_OBJECT};
 
-struct json_entry_list {
-    int size;
-    struct json_entry *values[];
-};
-
-struct json_entry {
-    char *key;
-    struct json_data *value;
-};
 
 struct json_array {
     int size;
@@ -32,6 +23,7 @@ struct json_data {
     };
 };
 
-struct json_data *json_object_get(struct json_data *json_object, int keyc, ...);
+struct json_data *json_get(struct json_data *json_object, int keyc, ...);
+void json_free(struct json_data *json_object);
 
 #endif /* end of include guard: JSON_H */

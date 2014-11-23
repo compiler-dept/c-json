@@ -5,6 +5,7 @@
     #include <assert.h>
     #include <stdlib.h>
     #include "json.h"
+    #include "json_private.h"
 }
 
 %token_type { char * }
@@ -17,7 +18,7 @@
 %type components { struct json_array * }
 %type atomic { struct json_data * }
 
-%extra_argument { struct json_data *object }
+%extra_argument { struct json_data **object }
 
 %syntax_error
 {
@@ -26,12 +27,13 @@
 
 start ::= object(O).
 {
-    object->type = JSON_OBJECT;
-    object->object_ref = O;
+    *object = malloc(sizeof(struct json_data));
+    (*object)->type = JSON_OBJECT;
+    (*object)->object_ref = O;
 }
 start ::= error.
 {
-    object->type = JSON_NULL;
+    (*object)->type = JSON_NULL;
 }
 
 object(O) ::= LBRACE entry_list(EL) RBRACE.
