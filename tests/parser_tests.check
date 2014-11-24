@@ -40,6 +40,22 @@
 
     json_free(json);
 
+#test syntax_error
+    struct json_data *json = NULL;
+    void *parser = ParseAlloc(malloc);
+
+    Parse(parser, LBRACE, strdup("{"), &json);
+    Parse(parser, IDENTIFIER, strdup("string"), &json);
+    Parse(parser, COLON, strdup(":"), &json);
+    Parse(parser, STRING, strdup("\"foo\""), &json);
+    Parse(parser, RBRACE, strdup("}"), &json);
+    Parse(parser, RBRACE, strdup("}"), &json); // syntax error
+
+    Parse(parser, 0, 0, &json);
+    ParseFree(parser, free);
+
+    ck_assert(json == NULL);
+
 #test get_object_atomic
     struct json_data *json = NULL;
     void *parser = ParseAlloc(malloc);
