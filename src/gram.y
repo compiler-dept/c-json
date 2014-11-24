@@ -59,6 +59,7 @@ start ::= error.
 
     struct json_entry *json_entry = NULL;
     while ((json_entry = stack_pop(&allocated_entries)) != NULL){
+        free(json_entry->key);
         free(json_entry);
     }
 
@@ -101,6 +102,7 @@ entry_list(EL1) ::= entry(E) COMMA entry_list(EL2).
     memcpy(EL1->values + 1, EL2->values,
         EL2->size * sizeof(struct json_entry *));
     free(EL2);
+    stack_pop(&allocated_entry_lists); // pop EL2 from stack
     stack_push(&allocated_entry_lists, EL1);
 }
 entry_list(EL) ::= entry(E).
@@ -185,6 +187,7 @@ components(C1) ::= atomic(A) COMMA components(C2).
     memcpy(C1->values + 1, C2->values, 
         C2->size * sizeof(struct json_data *));
     free(C2);
+    stack_pop(&allocated_arrays); // pop C2 from stack
     stack_push(&allocated_arrays, C1);
 }
 components(C) ::= atomic(A).
