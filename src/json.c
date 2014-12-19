@@ -17,10 +17,13 @@ void json_parse(const char *str, struct json_data **json){
 
     void *parser = ParseAlloc(malloc);
     while ((token = yylex(scanner))) {
-        Parse(parser, token, strdup(yyget_text(scanner)),
-                json);
+        char *text = strdup(yyget_text(scanner));
+        Parse(parser, token, text, json);
     }
     Parse(parser, 0, NULL, json);
+    ParseFree(parser, free);
+    yy_delete_buffer(bufferState, scanner);
+    yylex_destroy(scanner);
 }
 
 struct json_data *json_get(struct json_data *json_object, int keyc, ...)

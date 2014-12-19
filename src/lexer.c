@@ -829,7 +829,7 @@ return RBRACKET;
 case 12:
 YY_RULE_SETUP
 #line 25 "src/lexer.l"
-return RBRACE;
+return LBRACE;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP

@@ -22,7 +22,7 @@
 [ \t\n]+                ;
 "["                     return LBRACKET;
 "]"                     return RBRACKET;
-"{"                     return RBRACE;
+"{"                     return LBRACE;
 "}"                     return RBRACE;
 ":"                     return COLON;
 ","                     return COMMA;
