@@ -201,9 +201,7 @@ components(C1) ::= components(C2) COMMA atomic(A).
         + C2->size * sizeof(struct json_data));
     C1->size = C2->size + 1;
     C1->values[C1->size - 1] = A;
-    for (int i = 0; i < C2->size; i++){
-        C1->values[i] = C2->values[C2->size - i - 1];
-    }
+    memcpy(C1->values, C2->values, C2->size * sizeof(struct json_data *));
     free(C2);
     stack_pop(&allocated_arrays); // pop C2 from stack
     stack_push(&allocated_arrays, C1);

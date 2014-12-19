@@ -72,16 +72,17 @@
 
 
 #test get_array
-    struct json_data *json = json_parse("{ \"array\" : [ \"foo\", \"bar\" ] }");
+    struct json_data *json = json_parse("{ \"array\" : [ \"foo\", \"bar\", \"spam\" ] }");
 
     ck_assert(json->type == JSON_OBJECT);
 
     struct json_data *array = json_get(json, 1, "array");
     ck_assert(array->type == JSON_ARRAY);
-    ck_assert(array->array_ref->size == 2);
+    ck_assert(array->array_ref->size == 3);
     ck_assert(array->array_ref->values[0]->type == JSON_STRING);
     ck_assert(strcmp(array->array_ref->values[0]->string_value, "foo") == 0);
     ck_assert(strcmp(array->array_ref->values[1]->string_value, "bar") == 0);
+    ck_assert(strcmp(array->array_ref->values[2]->string_value, "spam") == 0);
 
     json_free(json);
 
