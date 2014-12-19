@@ -11,9 +11,7 @@
 
 %%
 
-"\""                    { BEGIN str; }
-<str>"\."               {} // Ignore escape sequences
-<str>"\""               return STRING;
+\"(\\.|[^"])*\"         return STRING;
 "null"                  return JNULL;
 "true"                  return BOOLEAN;
 "false"                 return BOOLEAN;

@@ -42,6 +42,7 @@ start ::= object(O).
 }
 start ::= error.
 {
+    puts("error");
     (*object) = NULL;
 
     struct json_data *json_data = NULL;

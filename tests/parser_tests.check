@@ -6,15 +6,6 @@
 #include "hashmap.h"
 #include "test_helper.h"
 
-#test parser_lexer
-    struct json_data *json = json_parse("{}");
-
-    ck_assert(json->type == JSON_OBJECT);
-    ck_assert(json->object_ref == NULL);
-    ck_assert(json_get(json, 1, "needle") == NULL);
-
-    json_free(json);
-
 #test empty_object
     struct json_data *json;
     void *parser = ParseAlloc(malloc);
@@ -56,7 +47,7 @@
 
     Parse(parser, LBRACE, strdup("{"), &json);
 
-    Parse(parser, IDENTIFIER, strdup("null"), &json);
+    Parse(parser, IDENTIFIER, strdup("jnull"), &json);
     Parse(parser, COLON, strdup(":"), &json);
     Parse(parser, JNULL, strdup("null"), &json);
 
@@ -93,7 +84,7 @@
 
     struct json_data *needle;
 
-    needle = json_get(json, 1, "null");
+    needle = json_get(json, 1, "jnull");
     ck_assert(needle != NULL);
     ck_assert(needle->type == JSON_NULL);
 
@@ -168,7 +159,7 @@
 
     json_free(json);
 
-#test parse_array
+#test get_array
     struct json_data *json = NULL;
     void *parser = ParseAlloc(malloc);
 
