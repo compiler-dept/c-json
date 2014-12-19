@@ -27,7 +27,7 @@
     void *parser = ParseAlloc(malloc);
 
     Parse(parser, LBRACE, strdup("{"), &json);
-    Parse(parser, IDENTIFIER, strdup("string"), &json);
+    Parse(parser, STRING, strdup("\"string\""), &json);
     Parse(parser, COLON, strdup(":"), &json);
     Parse(parser, STRING, strdup("\"foo\""), &json);
     Parse(parser, RBRACE, strdup("}"), &json);
@@ -47,31 +47,31 @@
 
     Parse(parser, LBRACE, strdup("{"), &json);
 
-    Parse(parser, IDENTIFIER, strdup("jnull"), &json);
+    Parse(parser, STRING, strdup("\"null\""), &json);
     Parse(parser, COLON, strdup(":"), &json);
     Parse(parser, JNULL, strdup("null"), &json);
 
     Parse(parser, COMMA, strdup(","), &json);
 
-    Parse(parser, IDENTIFIER, strdup("bool1"), &json);
+    Parse(parser, STRING, strdup("\"bool1\""), &json);
     Parse(parser, COLON, strdup(":"), &json);
     Parse(parser, BOOLEAN, strdup("true"), &json);
 
     Parse(parser, COMMA, strdup(","), &json);
 
-    Parse(parser, IDENTIFIER, strdup("bool2"), &json);
+    Parse(parser, STRING, strdup("\"bool2\""), &json);
     Parse(parser, COLON, strdup(":"), &json);
     Parse(parser, BOOLEAN, strdup("false"), &json);
 
     Parse(parser, COMMA, strdup(","), &json);
 
-    Parse(parser, IDENTIFIER, strdup("number"), &json);
+    Parse(parser, STRING, strdup("\"number\""), &json);
     Parse(parser, COLON, strdup(":"), &json);
     Parse(parser, NUMBER, strdup("-23.4"), &json);
 
     Parse(parser, COMMA, strdup(","), &json);
 
-    Parse(parser, IDENTIFIER, strdup("string"), &json);
+    Parse(parser, STRING, strdup("\"string\""), &json);
     Parse(parser, COLON, strdup(":"), &json);
     Parse(parser, STRING, strdup("\"foo\""), &json);
 
@@ -84,7 +84,7 @@
 
     struct json_data *needle;
 
-    needle = json_get(json, 1, "jnull");
+    needle = json_get(json, 1, "null");
     ck_assert(needle != NULL);
     ck_assert(needle->type == JSON_NULL);
 
@@ -116,13 +116,13 @@
 
     Parse(parser, LBRACE, strdup("{"), &json);
 
-    Parse(parser, IDENTIFIER, strdup("object"), &json);
+    Parse(parser, STRING, strdup("\"object\""), &json);
     Parse(parser, COLON, strdup(":"), &json);
         Parse(parser, LBRACE, strdup("{"), &json);
-        Parse(parser, IDENTIFIER, strdup("object"), &json);
+        Parse(parser, STRING, strdup("\"object\""), &json);
         Parse(parser, COLON, strdup(":"), &json);
             Parse(parser, LBRACE, strdup("{"), &json);
-            Parse(parser, IDENTIFIER, strdup("string"), &json);
+            Parse(parser, STRING, strdup("\"string\""), &json);
             Parse(parser, COLON, strdup(":"), &json);
             Parse(parser, STRING, strdup("\"foo\""), &json);
             Parse(parser, RBRACE, strdup("}"), &json);
@@ -164,7 +164,7 @@
     void *parser = ParseAlloc(malloc);
 
     Parse(parser, LBRACE, strdup("{"), &json);
-    Parse(parser, IDENTIFIER, strdup("array"), &json);
+    Parse(parser, STRING, strdup("\"array\""), &json);
     Parse(parser, COLON, strdup(":"), &json);
     Parse(parser, LBRACKET, strdup("["), &json);
     Parse(parser, STRING, strdup("\"foo\""), &json);
@@ -193,13 +193,13 @@
 
     Parse(parser, LBRACE, strdup("{"), &json);
 
-    Parse(parser, IDENTIFIER, strdup("string"), &json);
+    Parse(parser, STRING, strdup("\"string\""), &json);
     Parse(parser, COLON, strdup(":"), &json);
     Parse(parser, STRING, strdup("\"foo\""), &json);
 
     Parse(parser, COMMA, strdup(","), &json);
 
-    Parse(parser, IDENTIFIER, strdup("array"), &json);
+    Parse(parser, STRING, strdup("\"array\""), &json);
     Parse(parser, COLON, strdup(":"), &json);
     Parse(parser, LBRACKET, strdup("["), &json);
     Parse(parser, STRING, strdup("\"foo\""), &json);
@@ -207,10 +207,10 @@
     Parse(parser, STRING, strdup("\"bar\""), &json);
     Parse(parser, RBRACKET, strdup("]"), &json);
 
-    Parse(parser, IDENTIFIER, strdup("object"), &json);
+    Parse(parser, STRING, strdup("\"object\""), &json);
     Parse(parser, COLON, strdup(":"), &json);
     Parse(parser, LBRACE, strdup("{"), &json);
-    Parse(parser, IDENTIFIER, strdup("string"), &json);
+    Parse(parser, STRING, strdup("\"string\""), &json);
     Parse(parser, COLON, strdup(":"), &json);
     Parse(parser, STRING, strdup("\"foo\""), &json);
     Parse(parser, RBRACE, strdup("}"), &json);

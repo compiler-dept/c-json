@@ -18,6 +18,9 @@ struct json_data *json_parse(const char *str){
 
     void *parser = ParseAlloc(malloc);
     while ((token = yylex(scanner))) {
+        if (token == -1){
+            break;
+        }
         char *text = strdup(yyget_text(scanner));
         Parse(parser, token, text, &json);
     }

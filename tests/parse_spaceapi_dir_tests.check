@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "../src/gram.h"
+#include "../src/json.h"
+#include "hashmap.h"
+#include "test_helper.h"
+
+#test parse_directory
+    char *str = NULL;
+    int len = 0;
+
+    FILE *f = fopen ("directory.json", "rb");
+
+    char buf[1024];
+    int count = 0;
+    while ((count = fread(buf, 1, 1024, f)) > 0){
+        str = realloc(str, len + count);
+        memcpy(str + len, buf, count);
+        len += count;
+    }
+    fclose(f);
+
+    str = realloc(str, len+ 1);
+    str[len] = '\0';
+
+    struct json_data *json = json_parse(str);
+    free(str);
+    ck_assert(json->type == JSON_OBJECT);
+    json_free(json);

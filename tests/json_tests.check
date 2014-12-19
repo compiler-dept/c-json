@@ -8,7 +8,7 @@
 
 #test get_object_atomic
     struct json_data *json = 
-        json_parse("{ jnull : null, bool1 : true, bool2 : false, number : -23.4, string : \"foo\"}");
+        json_parse("{ \"jnull\" : null, \"bool1\" : true, \"bool2\" : false, \"number\" : -23.4, \"string\" : \"foo\"}");
 
     ck_assert(json->type == JSON_OBJECT);
 
@@ -42,7 +42,7 @@
 
 #test get_object_object
     struct json_data *json = 
-        json_parse("{ object : { object : { string : \"foo\" } } }");
+        json_parse("{ \"object\" : { \"object\" : { \"string\" : \"foo\" } } }");
 
     ck_assert(json->type == JSON_OBJECT);
 
@@ -72,7 +72,7 @@
 
 
 #test get_array
-    struct json_data *json = json_parse("{ array : [ \"foo\", \"bar\" ] }");
+    struct json_data *json = json_parse("{ \"array\" : [ \"foo\", \"bar\" ] }");
 
     ck_assert(json->type == JSON_OBJECT);
 
@@ -84,3 +84,12 @@
     ck_assert(strcmp(array->array_ref->values[1]->string_value, "bar") == 0);
 
     json_free(json);
+
+
+#test syntax_error
+    struct json_data *json = 
+        json_parse("{ \"string\" : \"foos\", s\" : null }");
+
+    if (json){
+        json_free(json);
+    }
