@@ -6,6 +6,16 @@
 #include "hashmap.h"
 #include "test_helper.h"
 
+#test parser_lexer
+    struct json_data *json;
+    json_parse("{}", &json);
+
+    ck_assert(json->type == JSON_OBJECT);
+    ck_assert(json->object_ref == NULL);
+    ck_assert(json_get(json, 1, "needle") == NULL);
+
+    json_free(json);
+
 #test empty_object
     struct json_data *json;
     void *parser = ParseAlloc(malloc);

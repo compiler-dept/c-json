@@ -1,7 +1,27 @@
 #include <stdarg.h>
 #include "hashmap.h"
+#include "lexer.h"
 #include "json.h"
 #include "json_private.h"
+
+void *ParseAlloc(void *(*allocProc) (size_t));
+void Parse(void *, int, const char *, struct json_data **object);
+void ParseFree(void *, void (*freeProc) (void *));
+
+void json_parse(const char *str, struct json_data **json){
+    yyscan_t scanner;
+	yylex_init(&scanner);
+    YY_BUFFER_STATE bufferState = yy_scan_string(str, scanner);
+
+    int token = 0;
+
+    void *parser = ParseAlloc(malloc);
+    while ((token = yylex(scanner))) {
+        Parse(parser, token, strdup(yyget_text(scanner)),
+                json);
+    }
+    Parse(parser, 0, NULL, json);
+}
 
 struct json_data *json_get(struct json_data *json_object, int keyc, ...)
 {
