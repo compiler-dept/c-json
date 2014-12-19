@@ -8,7 +8,8 @@ void *ParseAlloc(void *(*allocProc) (size_t));
 void Parse(void *, int, const char *, struct json_data **object);
 void ParseFree(void *, void (*freeProc) (void *));
 
-void json_parse(const char *str, struct json_data **json){
+struct json_data *json_parse(const char *str){
+    struct json_data *json;
     yyscan_t scanner;
 	yylex_init(&scanner);
     YY_BUFFER_STATE bufferState = yy_scan_string(str, scanner);
@@ -18,12 +19,13 @@ void json_parse(const char *str, struct json_data **json){
     void *parser = ParseAlloc(malloc);
     while ((token = yylex(scanner))) {
         char *text = strdup(yyget_text(scanner));
-        Parse(parser, token, text, json);
+        Parse(parser, token, text, &json);
     }
-    Parse(parser, 0, NULL, json);
+    Parse(parser, 0, NULL, &json);
     ParseFree(parser, free);
     yy_delete_buffer(bufferState, scanner);
     yylex_destroy(scanner);
+    return json;
 }
 
 struct json_data *json_get(struct json_data *json_object, int keyc, ...)

@@ -23,7 +23,7 @@ struct json_data {
     };
 };
 
-void json_parse(const char *str, struct json_data **json);
+struct json_data *json_parse(const char *str);
 struct json_data *json_get(struct json_data *json_object, int keyc, ...);
 void json_free(struct json_data *json_object);
 

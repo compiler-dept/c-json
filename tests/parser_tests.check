@@ -7,8 +7,7 @@
 #include "test_helper.h"
 
 #test parser_lexer
-    struct json_data *json;
-    json_parse("{}", &json);
+    struct json_data *json = json_parse("{}");
 
     ck_assert(json->type == JSON_OBJECT);
     ck_assert(json->object_ref == NULL);
