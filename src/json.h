@@ -1,11 +1,9 @@
 #ifndef JSON_H
-
 #define JSON_H
 
 #include "hashmap.h"
 
 enum json_type {JSON_NULL, JSON_BOOL, JSON_NUM, JSON_STRING, JSON_ARRAY, JSON_OBJECT};
-
 
 struct json_array {
     int size;

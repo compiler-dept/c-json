@@ -14,8 +14,7 @@ TEST_OBJECTS=$(patsubst %.check, %.o, $(TEST_SOURCES)) \
 TESTS=$(patsubst %.check, bin/%, $(TEST_SOURCES))
 
 .PRECIOUS: $(TESTS)
-.PHONY: all parser lemon test clean dist-clean indent objects libcollect getexternals
-
+.PHONY: parser lemon test clean dist-clean indent objects libcollect getexternals
 
 parser: src/gram.y lemon
 	$(YACC) $<
@@ -56,7 +55,7 @@ dist-clean:
 	@- make -C lemon clean
 
 indent:
-	find . \( -iname "*.c" -o -iname "*.h" \) -exec astyle --style=linux {} \;
+	find src \( -iname "*.c" -o -iname "*.h" \) -exec astyle --style=linux {} \;
 
 getexternals:
 	git submodule init

@@ -44,7 +44,6 @@
         while ((hashmap = stack_pop(&allocated_hashmaps)) != NULL){
             hashmap_free(hashmap);
         }
-
     }
 }
 
