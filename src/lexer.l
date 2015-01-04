@@ -24,4 +24,5 @@
 ":"                     return COLON;
 ","                     return COMMA;
 .                       return -1;
+
 %%

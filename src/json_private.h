@@ -1,5 +1,4 @@
 #ifndef JSON_PRIVATE_H
-
 #define JSON_PRIVATE_H
 
 struct json_entry_list {
