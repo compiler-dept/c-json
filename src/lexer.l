@@ -2,8 +2,6 @@
 #include "gram.h"
 %}
 
-%x str
-
 %option reentrant
 %option noyywrap
 %option noinput
