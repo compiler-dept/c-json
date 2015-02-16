@@ -4,8 +4,8 @@
     #include <string.h>
     #include <assert.h>
     #include <stdlib.h>
-    #include "json.h"
-    #include "json_private.h"
+    #include "cjson.h"
+    #include "cjson_private.h"
     #include "hashmap.h"
     #include "stack.h"
 
@@ -111,7 +111,7 @@ object(O) ::= LBRACE RBRACE.
 
 entry_list(EL1) ::= entry_list(EL2) COMMA entry(E) .
 {
-    EL1 = malloc(sizeof(struct json_entry_list) + 
+    EL1 = malloc(sizeof(struct json_entry_list) +
         EL2->size * sizeof(struct json_entry));
     EL1->size = EL2->size + 1;
     EL1->values[0] = E;
@@ -123,7 +123,7 @@ entry_list(EL1) ::= entry_list(EL2) COMMA entry(E) .
 }
 entry_list(EL) ::= entry(E).
 {
-    EL = malloc(sizeof(struct json_entry_list) 
+    EL = malloc(sizeof(struct json_entry_list)
         + sizeof(struct json_entry));
     EL->size = 1;
     EL->values[0] = E;
@@ -196,7 +196,7 @@ array(A) ::= LBRACKET components(C) RBRACKET.
 
 components(C1) ::= components(C2) COMMA atomic(A).
 {
-    C1 = malloc(sizeof(struct json_array) 
+    C1 = malloc(sizeof(struct json_array)
         + C2->size * sizeof(struct json_data));
     C1->size = C2->size + 1;
     C1->values[C1->size - 1] = A;

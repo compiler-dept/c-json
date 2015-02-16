@@ -1,4 +1,3 @@
-bin
 *.o
 *.out
 gram.c
@@ -7,6 +6,5 @@ lexer.c
 lexer.h
 tests/*.c
 *.orig
-lib
-lib/*
 lemon/lemon
+libcjson.a
