@@ -3,10 +3,7 @@
 #include "lexer.h"
 #include "cjson.h"
 #include "cjson_private.h"
-
-void *ParseAlloc(void *(*allocProc) (size_t));
-void Parse(void *, int, const char *, struct json_data **object);
-void ParseFree(void *, void (*freeProc) (void *));
+#include "parser_signatures.h"
 
 struct json_data *json_parse(const char *str)
 {
