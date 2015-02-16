@@ -1,16 +1,18 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "../src/gram.h"
-#include "../src/json.h"
-#include "hashmap.h"
-#include "test_helper.h"
+#include "clar.h"
 
-#test parse_directory
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#include <cjson.h>
+
+void test_spaceapi__parse_directory(void)
+{
     char *str = NULL;
     int len = 0;
 
-    FILE *f = fopen ("directory.json", "rb");
+    FILE *f = fopen(cl_fixture("directory.json"), "r");
+    cl_assert(f != NULL);
 
     char buf[1024];
     int count = 0;
@@ -21,10 +23,11 @@
     }
     fclose(f);
 
-    str = realloc(str, len+ 1);
+    str = realloc(str, len + 1);
     str[len] = '\0';
 
     struct json_data *json = json_parse(str);
     free(str);
-    ck_assert(json->type == JSON_OBJECT);
+    cl_assert(json->type == JSON_OBJECT);
     json_free(json);
+}

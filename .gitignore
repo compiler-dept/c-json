@@ -1,12 +1,11 @@
-bin
+libcjson.a
 *.o
 *.out
 gram.c
 gram.h
 lexer.c
 lexer.h
-tests/*.c
 *.orig
-lib
-lib/*
-lemon/lemon
+tests/testsuite
+tests/.clarcache
+tests/clar.suite

@@ -1,61 +1,64 @@
+PREFIX?=/usr/local
+INCLUDE_DIR=$(PREFIX)/include
+LIB_DIR=$(PREFIX)/lib
+
+LIB=libcjson.a
+HEADER=cjson.h
+
 DISABLED_WARNINGS=switch
-CFLAGS=-g -Wall $(patsubst %, -Wno-%, $(DISABLED_WARNINGS)) -std=gnu11 -Ilibcollect
-LDFLAGS=-Llibcollect -lcollect
+CFLAGS=-g -Wall -std=gnu11 -Ilibcollect $(patsubst %, -Wno-%, $(DISABLED_WARNINGS))
 YACC=lemon/lemon
 LEX=flex
 
-NOWANTS=src/lexer.c src/gram.c src/hashmap.c src/stack.c
-SOURCES=$(wildcard src/*.c) $(wildcard src/*.l) $(wildcard src/*.y)
-OBJECTS=$(patsubst %.c, %.o, $(patsubst %.l, %.o, $(patsubst %.y, %.o, $(filter-out $(NOWANTS), $(SOURCES)))))
+SOURCES=src/cjson.c src/lexer.l src/gram.y
+COBJECTS=$(patsubst %.c, %.o, $(SOURCES))
+LOBJECTS=$(patsubst %.l, %.o, $(COBJECTS))
+OBJECTS=$(patsubst %.y, %.o, $(LOBJECTS))
 
-TEST_SOURCES=$(wildcard tests/*_tests.check)
-TEST_OBJECTS=$(patsubst %.check, %.o, $(TEST_SOURCES)) \
-	$(patsubst %.check, %.c, $(TEST_SOURCES))
-TESTS=$(patsubst %.check, bin/%, $(TEST_SOURCES))
+.PHONY: all test clean lemon libcollect install uninstall getexternals
 
-.PRECIOUS: $(TESTS)
-.PHONY: parser lemon test clean dist-clean indent objects libcollect getexternals
+all: $(LIB)
 
-parser: src/gram.y lemon
-	$(YACC) $<
+$(LIB): $(OBJECTS) src/lexer.c libcollect
+	ar -rcs $@ $(OBJECTS)
 
-src/lexer.c: src/lexer.l parser
+src/cjson.o: src/cjson.c src/lexer.c
+
+src/lexer.c: src/lexer.l src/gram.c
 	$(LEX) --header-file=src/lexer.h -o $@ $<
 
-bin:
-	mkdir -p bin
+src/gram.c: src/gram.y lemon
+	$(YACC) $<
 
-bin/tests:
-	mkdir -p bin/tests
+CLAR_PATH=`pwd`/tests
+CLAR_FIXTURE_PATH=`pwd`/tests/resources
+TEST_SOURCES=$(wildcard tests/*.c)
+tests/testsuite: $(TEST_SOURCES) $(TEST_DEPS) libcollect $(LIB)
+	tests/generate.py tests
+	$(CC) -Isrc -L. -Ilibcollect -Llibcollect $(CFLAGS) -Wno-unused-function -DCLAR_FIXTURE_PATH=\"$(CLAR_FIXTURE_PATH)\" -o $@ $(TEST_SOURCES) -lcjson -lcollect
 
-tests/%_tests.c: tests/%_tests.check
-	checkmk $< > $@
+test: tests/testsuite
+	tests/testsuite
 
-bin/tests/%_tests: tests/%_tests.c src/lexer.c libcollect bin/tests
-	$(CC) $(CFLAGS) `pkg-config --cflags --libs check` -o $@ $< src/json.c src/gram.c src/lexer.c $(LDFLAGS)
-	$@
+clean:
+	rm -f $(LIB) $(OBJECTS) src/lexer.c src/lexer.h src/gram.c src/gram.h src/gram.out
+	rm -rf tests/testsuite tests/.clarcache tests/clar.suite
+
+install:
+	mkdir -p $(INCLUDE_DIR)
+	mkdir -p $(LIB_DIR)
+	install -m 444 $(LIB) $(LIB_DIR)/$(LIB)
+	install -m 644 src/$(HEADER) $(INCLUDE_DIR)/$(HEADER)
+
+uninstall:
+	rm -f $(LIB_DIR)/$(LIB)
+	rm -f $(INCLUDE_DIR)/$(HEADER)
 
 libcollect:
 	@- make -C libcollect
 
 lemon:
 	@- make -C lemon
-
-test: $(TESTS)
-
-objects:
-	@- echo $(OBJECTS)
-
-clean:
-	rm -rf bin lib $(OBJECTS) src/gram.h src/gram.c src/gram.out src/lexer.c src/lexer.h
-
-dist-clean:
-	@- make clean
-	@- make -C libcollect clean
-	@- make -C lemon clean
-
-indent:
-	find src \( -iname "*.c" -o -iname "*.h" \) -exec astyle --style=linux {} \;
 
 getexternals:
 	git submodule init

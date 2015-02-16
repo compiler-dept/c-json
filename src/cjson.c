@@ -1,12 +1,9 @@
 #include <stdarg.h>
 #include "hashmap.h"
 #include "lexer.h"
-#include "json.h"
-#include "json_private.h"
-
-void *ParseAlloc(void *(*allocProc) (size_t));
-void Parse(void *, int, const char *, struct json_data **object);
-void ParseFree(void *, void (*freeProc) (void *));
+#include "cjson.h"
+#include "cjson_private.h"
+#include "parser_signatures.h"
 
 struct json_data *json_parse(const char *str)
 {
